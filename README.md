@@ -1,7 +1,3 @@
-# About This Workshop
+# Notes from tutorials
 
-Blah
-
-```ts
-  let Hello : string = 'World';
-```
+[JavaScript](./javascript/README.md)
