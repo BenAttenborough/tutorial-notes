@@ -608,3 +608,141 @@ course1.getInstructors(); // ["Colt", "Elie"]
 // now the instructors variable is truly private!
 ```
 </details>
+
+## Call, apply and bind
+
+<details>
+<summary>
+.call()
+</summary>
+The call() method calls a function with a given this value and arguments provided individually.
+
+Basic usage:
+
+```js
+/*
+ Write a function called arrayFrom which converts an array-like-object into an array.
+
+ Examples:
+ var divs = document.getElementsByTagName('divs');
+ divs.reduce // undefined
+ var converted = arrayFrom(divs);
+ converted.reduce // function(){}....
+ */
+
+function arrayFrom(arrayLikeObject){
+    return [].slice.call(arrayLikeObject)
+}
+
+/*
+ // Write a function called sumEvenArguments which takes all of the arguments
+ passed to a function and returns the sum of the even ones.
+
+ Examples:
+ sumEvenArguments(1,2,3,4) // 6
+ sumEvenArguments(1,2,6) // 8
+ sumEvenArguments(1,2) // 2
+ */
+
+function sumEvenArguments(){
+    var args = [].slice.call(arguments);
+    return args.reduce(function(acc, nextVal) {
+        if (nextVal % 2 === 0) {
+            acc += nextVal;
+        }
+        return acc;
+    },0)
+}
+```
+</details>
+
+<details>
+<summary>
+.apply()
+</summary>
+The apply() method calls a function with a given this value, and arguments provided as an array (or an array-like object). See MDN
+
+Basic usage:
+
+```js
+/*
+ Write a function called invokeMax which accepts a function and a maximum amount. invokeMax should return a function that when called increments a counter. If the counter is greater than the maximum amount, the inner function should return "Maxed Out"
+
+ Examples:
+
+ function add(a,b){
+ return a+b
+ }
+
+ var addOnlyThreeTimes = invokeMax(add,3);
+ addOnlyThreeTimes(1,2) // 3
+ addOnlyThreeTimes(2,2) // 4
+ addOnlyThreeTimes(1,2) // 3
+ addOnlyThreeTimes(1,2) // "Maxed Out!"
+
+ */
+
+function invokeMax(fn, num){
+    var max = 0;
+    return function(){
+        if(max >= num) return "Maxed Out!";
+        max++;
+        return fn.apply(this,arguments);
+    }
+}
+
+/*
+ Write a function called once which accepts two parameters, a function and a value for the keyword 'this'. Once should return a new function that can only be invoked once, with the value of the keyword this in the function set to be the second parameter.
+
+ Examples:
+
+ function add(a,b){
+ return a+b
+ }
+
+ var addOnce = once(add, this);
+ addOnce(2,2) // 4
+ addOnce(2,2) // undefined
+ addOnce(2,2) // undefined
+
+ function doMath(a,b,c){
+ return this.firstName + " adds " + (a+b+c)
+ }
+
+ var instructor = {firstName: "Elie"}
+ var doMathOnce = once(doMath, instructor);
+ doMathOnce(1,2,3) // "Elie adds 6"
+ doMathOnce(1,2,3) // undefined
+
+
+ */
+
+function once(fn, thisArg){
+    var hasBeenCalled = false;
+    return function(){
+        if(!hasBeenCalled){
+            hasBeenCalled = true;
+            return fn.apply(thisArg, arguments)
+        }
+    }
+}
+```
+</details>
+
+<details>
+<summary>
+.bind()
+</summary>
+The filter() method creates a new array with all elements that pass the test implemented by the provided function. See MDN
+
+Basic usage:
+</details>
+
+<details>
+<summary>
+.reduce()
+</summary>
+The reduce() method applies a function against an accumulator and each element in the array (from left to right) to reduce it to a single value. See MDN
+
+Basic usage:
+</details>
