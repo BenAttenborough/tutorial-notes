@@ -525,6 +525,7 @@ function guessingGame(amount){
 <summary>
 Private variables
 </summary>
+
 ```js
 // Private variables
 
