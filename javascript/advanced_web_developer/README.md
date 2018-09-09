@@ -746,3 +746,874 @@ The reduce() method applies a function against an accumulator and each element i
 
 Basic usage:
 </details>
+
+## ES2015
+
+<details>
+<summary>
+const
+</summary>
+Constants are block-scoped, much like variables defined using the let statement. The value of a constant cannot change through re-assignment, and it can't be redeclared. See MDN
+
+Basic usage:
+
+```js
+var firstInstructor = "Colt";
+
+firstInstructor = "Elie";
+
+const anotherInstructor = "Tim";
+
+anotherInstructor = "Elie"; // TypeError
+
+const anotherInstructor = "Bob"; // SyntaxError
+
+// We can NEVER redeclare a const
+// However if const is an object or array their values can change
+// This is because const only makes the binding imutable, not the values.
+// Primitives are the same as their bindings so cannot change
+// But object and array VALUES can be changed
+
+const numbers = [1,2,3,4];
+numbers.push(10);
+numbers; // (5) [1,2,3,4,10]
+numbers = "No!"; // TypeError
+```
+</details>
+
+<details>
+<summary>
+let
+</summary>
+The let statement declares a block scope local variable, optionally initializing it to a value. See MDN
+
+Basic usage:
+
+```js
+// Let creates block scope
+
+var instructor = "Elie";
+
+if (instructor === "Elie") {
+    let funFact = "Plays Cello!";
+}
+
+funFact; // Reference error
+
+// Hoisting with let
+
+function helloInstructor() {
+    return elie;
+    var elie = "ME!";
+}
+helloInstructor(); // undefined - notice that the variable is created, but not assigned a value
+
+// Variable is hoisted to the top of the function
+
+// So the above becomes:
+
+function helloInstructor() {
+    var elie;
+    return elie;
+    elie = "ME!";
+}
+
+// Everything below the return statement is unreachable.
+
+// Let has hoisting as well but we cannot access the value
+// It occupies a Temporal Dead Zone (TDZ)
+
+function helloSecondInstructor() {
+    return colt;
+    let colt = "Him!";
+}
+helloSecondInstructor(); // ReferenceError
+
+// Use cases for let
+
+for (var i = 0; i < 5; i++) {
+    setTimeout(function () {
+        console.log(i);
+    }, 1000)
+}
+
+// 5 (five times)
+// Because by the time the setTimeout completes the for loop has completed and i = the last value (5)
+
+// Pre ES2015 solution:
+
+for (var i = 0; i < 5; i++) {
+    (function (j) {
+        setTimeout(function () {
+            console.log(j);
+        }, 1000);
+    })(i)
+}
+
+// ES2015
+
+for (let i = 0; i < 5; i++) {
+    setTimeout(function () {
+        console.log(i);
+    }, 1000)
+}
+```
+</details>
+
+<details>
+<summary>
+Template strings
+</summary>
+Template literals are string literals allowing embedded expressions. You can use multi-line strings and string interpolation features with them. They were called "template strings" in prior editions of the ES2015 specification. MDN
+
+Basic usage:
+
+```js
+//ES5
+
+var firstName = "Elie";
+
+var lastName = "Schoppik";
+
+console.log("Hello" + firstName + " " + lastName); // error prone!
+
+//ES2015
+
+console.log(`Hello ${firstName} ${lastName}`);
+
+//Multiline strings
+
+`
+Hello
+How
+Nice
+This
+Is!
+`
+```
+</details>
+
+<details>
+<summary>
+Arrow functions
+</summary>
+An arrow function expression has a shorter syntax than a function expression and does not have its own this, arguments, super, or new.target. These function expressions are best suited for non-method functions, and they cannot be used as constructors. See MDN
+
+* Arrow functions are not exatly the same as regular functions!
+* Arrow functions do not get their own 'this' keyword
+Inside of an arrow function, the keyword this has its original meaning from the enclosing context
+* The fact that arrow functions do not have their own this keyword can be quite helpful - you just need to understand when you might NOT want that!
+* Arrow functions do not get arguments
+* Arrow functions should not be used for object methods
+Basic usage:
+
+```js
+// ES5
+var add = function(a,b){
+    return a+b;
+};
+
+// Replace the keyword 'function' with =>
+
+let add = (a,b) => {
+    return a+b;
+};
+
+// One line arrow functions
+// # You can put arrow functions on one line
+// # But you must omit the return keyword as well as curly braces
+
+let add = (a,b) => {
+    return a+b;
+};
+
+// Becomes
+
+let add = (a,b) => a+b;
+
+// Refactoring with arrow functions
+
+// ES5
+[1,2,3].map(function(value){
+    return value * 2;
+}) // [2,4,6]
+
+// Becomes
+
+[1,2,3].map(value => value * 2);
+
+// ES5
+
+function doubleAndFilter(arr){
+    return arr.map(function(value){
+        return value * 2;
+    }).filter(function(value){
+        return value % 3 === 0;
+    })
+}
+
+doubleAndFilter([5,10,15,20]); // [30]
+
+var doubleAndFilter = arr => arr.map(val => val * 2).filter(num => num % 3 === 0);
+
+doubleAndFilter([5,10,15,20]); // [30]
+
+// A familiar situation:
+
+var instructor = {
+    firstName: "Elie",
+    saysHi: function(){
+        setTimeout(function(){
+            console.log("Hello " + this.firstName);
+        }, 1000);
+    }
+}
+
+instructor.saysHi(); // "Hello undefined"
+// this.firstName is undefined because the 'this' context has changed to the setTimeout context, NOT the instructor object
+// In ES5 we can solve this by binding the this context to the setTimeout function:
+
+// ES15 solution:
+
+var instructor = {
+    firstName: "Elie",
+    saysHi: function(){
+        setTimeout(function(){
+            console.log("Hello " + this.firstName);
+        }.bind(this), 1000);
+    }
+}
+
+instructor.saysHi(); // "Hello Elie"
+
+// ES2015 solution
+
+var instructor = {
+    firstName: "Elie",
+    saysHi: function(){
+        setTimeout(() => {
+            console.log("Hello " + this.firstName);
+        }, 1000);
+    }
+}
+
+// Because arrow functions do not have a 'this' value the this value takes its context from the outer closure - the instructor object
+// But we still need to use the function keyword for the saysHi method, since that needs a this value
+
+// Arrow functions also don't get an arguments value either.
+
+/* 1 - Refactor the following code to use ES2015 arrow functions - make sure your function is also called tripleAndFilter
+
+ function tripleAndFilter(arr){
+ return arr.map(function(value){
+ return value * 3;
+ }).filter(function(value){
+ return value % 5 === 0;
+ })
+ }
+
+ */
+
+let tripleAndFilter = arr => arr.map(val => val * 3).filter(val => val % 5 === 0);
+
+
+/* 2 - Refactor the following code to use ES2015 arrow functions. Make sure your function is also called doubleOddNumbers
+
+ function doubleOddNumbers(arr){
+ return arr.filter(function(val){
+ return val % 2 !== 0;
+ }).map(function(val){
+ return val *2;
+ })
+ }
+
+ */
+
+let doubleOddNumbers = arr => arr.filter(val => val % 2 !== 0).map(val => val * 2 );
+
+
+
+/* 3 - Refactor the following code to use ES2015 arrow functions. Make sure your function is also called mapFilterAndReduce.
+
+ function mapFilterAndReduce(arr){
+ return arr.map(function(val){
+ return val.firstName
+ }).filter(function(val){
+ return val.length < 5;
+ }).reduce(function(acc,next){
+ acc[next] = next.length
+ return acc;
+ }, {})
+ }
+ */
+
+let mapFilterAndReduce = (arr) => arr.map(val => val.firstName).filter(val => val.length < 5)
+    .reduce((acc,next) => {
+        acc[next] = next.length
+        return acc;
+    }, {})
+
+/* 4 - Write a function called createStudentObj which accepts two parameters, firstName and lastName and returns an object with the keys of firstName and lastName with the values as the parameters passed to the function.
+
+ Example:
+ createStudentObj('Elie', 'Schoppik') // {firstName: 'Elie', lastName: 'Schoppik'}
+ */
+
+let createStudentObj = (firstName, lastName) => ({firstName:firstName, lastName:lastName})
+
+
+/* 5 - Given the following code:
+
+
+ Refactor this code to use arrow functions to make sure that in 1000 milliseconds you console.log 'Hello Colt'
+
+ var instructor = {
+ firstName: "Colt",
+ sayHi: function(){
+ setTimeout(function(){
+ console.log('Hello ' + this.firstName)
+ },1000)
+ }
+ }
+
+ */
+
+var instructor = {
+    firstName: "Colt",
+    sayHi: function(){
+        setTimeout(() =>{
+            console.log('Hello ' + this.firstName)
+        }, 1000)
+    }
+}
+```
+</details>
+
+<details>
+<summary>
+Default parameters
+</summary>
+Default function parameters allow formal parameters to be initialized with default values if no value or undefined is passed. See MDN
+
+```js
+// ES5
+function add(a, b){
+    return a+b;
+}
+
+add(); // NaN because a is undefined and b is undefined
+
+// ES5 solutions
+function add(a, b){
+    if(a == undefined) {
+        a = 2;
+    }
+    if(b == undefined) {
+        b = 5;
+    }
+    return a+b;
+}
+
+// ES2015 solution
+function add(a=10, b=20){
+    return a+b;
+}
+
+add(); // 30
+add(20); // 40
+```
+</details>
+
+<details>
+<summary>
+for...of
+</summary>
+The for...of statement creates a loop iterating over iterable objects (including the built-in String, Array, e.g. the Array-like arguments or NodeList objects, TypedArray, Map and Set, and user-defined iterables), invoking a custom iteration hook with statements to be executed for the value of each distinct property of the object. See MDN
+
+Basic usage:
+
+```js
+var arr = [1,2,3,4,5];
+
+for(let val of arr){
+    console.log(val);
+}
+
+// 1
+// 2
+// 3
+// 4
+// 5
+
+// Cannot be used on objects
+```
+</details>
+
+<details>
+<summary>
+rest
+</summary>
+The rest parameter syntax allows us to represent an indefinite number of arguments as an array. See MDN
+
+* The rest operator always returns an array
+* Is called the rest operator "only" when it is a parameter to a function
+* Is accessed without the ... in a function
+* A better alternative to using the arguments array-like-object
+Basic usage:
+
+```js
+function printRest(a, b, ...c) {
+    console.log(a);
+    console.log(b);
+    console.log(c);
+}
+
+printRest(1, 2, 3, 4, 5, 6);
+
+// 1
+// 2
+// [3,4,5,6]
+
+//ES5
+function sumArguments() {
+    var total = 0;
+    for (var i = 0; i < arguments.length; i++) {
+        total += arguments[i];
+    }
+    return total;
+}
+
+//Fancier ES5
+function sumArguments() {
+    var argumentsArray = [].slice.call(arguments);
+    return argumentsArray.reduce(function(acc,next){
+        return acc + next;
+    });
+}
+
+// ES2015
+var sumArguments = (...args) => args.reduce((acc, next) => acc + next);
+```
+</details>
+
+<details>
+<summary>
+spread
+</summary>
+Spread syntax allows an iterable such as an array expression or string to be expanded in places where zero or more arguments (for function calls) or elements (for array literals) are expected, or an object expression to be expanded in places where zero or more key-value pairs (for object literals) are expected. See MDN
+
+* Used on arrays to spread each value out (as a comma seperated value)
+* Useful when you have an array, but what you are working with expects comma separated values
+
+Basic usage:
+
+```js
+// ES5
+var arr1 = [1,2,3];
+var arr1 = [4,5,6];
+var arr1 = [7,8,9];
+var combined = arr1.concat(arr2).concat(arr3);
+
+// ES2015
+var combined = [...arr1,...arr2,...arr3];
+
+// Spread instead of apply
+
+// ES5
+var arr = [3,2,4,1,5];
+
+Math.max(arr); // NaN
+
+Math.max.apply(this, arr); // 5
+
+// ES2015
+Math.max(...arr);
+
+function sumValues(a,b,c){
+    return a+b+c;
+}
+
+var nums = [12,15,20];
+
+// ES5
+sumValues.apply(this, nums); // 47
+
+// ES2015
+sumValues(...nums);
+```
+</details>
+
+<details>
+<summary>
+Object enchancements
+</summary>
+Basic usage:
+
+```js
+// Object Shorthand Notation
+
+var firstName = "Elie";
+var lastName = "Schoppik";
+
+// ES5
+let instructor = {
+    firstName: firstName,
+    lastName: lastName
+}
+
+// ES2015
+var instructor = {
+    firstName,
+    lastName
+}
+
+// Object Methods
+
+// ES5
+var instructor = {
+    sayHello: function() {
+        return "Hello";
+    }
+}
+
+// ES2015
+var instructor = {
+    sayHello(){
+        return "Hello"''
+    }
+}
+
+// Computed Property Names
+
+// ES5
+var firstName = "Elie";
+var instructor = {};
+instructor[firstName] = "That's me!";
+
+instructor.Elie; // "That's me!"
+
+// ES2015
+var firstName = "Elie";
+var instructor = {
+    [firstName]: "That's me!"
+};
+
+instructor.Elie; // "That's me!"
+```
+</details>
+
+<details>
+<summary>
+Destructuring
+</summary>
+The destructuring assignment syntax is a JavaScript expression that makes it possible to unpack values from arrays, or properties from objects, into distinct variables. See MDN
+
+Extracting values from data stored in objects and arrays
+
+```js
+// ES5
+
+var instructor = {
+    firstName: "Elie",
+    lastName: "Schoppik"
+}
+
+var firstName = instructor.firstName;
+var lastName = instructor.lastName;
+
+firstName; // "Elie"
+lastName; // "Schoppik"
+
+// Gets worse more elements we have
+
+// ES2015
+
+var instructor = {
+    firstName: "Elie",
+    lastName: "Schoppik"
+}
+
+var {firstName, lastName} = instructor;
+
+firstName; // "Elie"
+lastName; // "Schoppik"
+
+// MUST use same variable names
+
+// If you want to use different variable names:
+
+var instructor = {
+    firstName: "Elie",
+    lastName: "Schoppik"
+}
+
+var {firstName:first, lastName:last} = instructor;
+
+first; // "Elie"
+last; // "Schoppik"
+
+// ES5 Default Values with an object
+
+function createInstructor(options) {
+    var options = options || {};
+    var name = options.name || {first: "Matt", last: "Lane"}
+    var isFunny = options.isFunny || false;
+    return [name.first, name.last, isFunny];
+}
+
+createInstructor(); // ["Matt", "Lane", false]
+createInstructor({isFunny: true}); // ["Matt", "Lane", true]
+createInstructor({name: {first: "Tim", last: "Garcia"}}); // ["Tim", "Garcia", false]
+
+// Lots of work!
+
+// ES2015 Destructuring
+
+function createInstructor({name = {first: "Matt", last: "Lane"}, isFunny=false} = {}) {
+    return [name.first, name.last, isFunny];
+}
+
+// # We're passing in a destructured object as a default parameter!
+// # We assign as a default value an empty object so ES2015 knows we are destructuring
+// # If nothing is passwed in, we default to the destructured object as the parameter
+
+// Object fields as parameters ES5
+
+function displayInfo(obj) {
+    return [obj.name, obj.favColor];
+}
+
+var instructor = {
+    name: "Elie",
+    favColor: "Purple"
+}
+
+displayInfo(instructor); // ["Elie", "Purple"]
+
+// Object fields as parameters ES2015
+
+function displayInfo({name,favColor}) {
+    return [name, favColor];
+}
+
+var instructor = {
+    name: "Elie",
+    favColor: "Purple"
+}
+
+displayInfo(instructor); // ["Elie", "Purple"]
+
+// Arrays
+
+var arr = [1, 2, 3];
+
+// ES5
+var a = arr[0];
+var b = arr[1];
+var c = arr[2];
+
+a; //1
+b; //2
+c; //3
+
+// ES2015
+
+var [a,b,c] = arr;
+
+a; //1
+b; //2
+c; //3
+
+// ES5 vx ES2015
+
+function returnNumbers(a, b) {
+    return [a, b];
+}
+
+var first = returnNumbers(5, 10)[0];
+var second = returnNumbers(5, 10)[1];
+
+first; // 5
+second; // 10
+
+// ES2015
+
+[first, second] = returnNumbers(5, 10);
+
+first; // 5
+second; // 10
+
+// Swapping values
+
+// ES5
+function swap(a, b) {
+    var temp = a;
+    a = b;
+    b = temp;
+    return [a, b];
+}
+
+swap(10,5); // [5,10]
+
+// ES2015
+function swap(a,b) {
+    return [a,b] = [b,a];
+}
+
+swap(10,5); // [5,10]
+
+// Exercises
+
+function displayStudentInfo(obj){
+    var {first, last} = obj;
+    return `Your full name is ${first} ${last}`
+}
+
+function printFullName({first,last}){
+    return `Your full name is ${first} ${last}`
+}
+
+function createStudent({likesJavaScript = true, likesES2015 = true} = {}){
+    var start = 'The student';
+    if(likesJavaScript && likesES2015){
+        start += ' likes JavaScript and ES2015'
+    } else if(likesJavaScript){
+        start += ' likes JavaScript!'
+    } else if(likesES2015){
+        start += ' likes ES2015!'
+    } else {
+        start += ' does not like much...'
+    }
+    return start;
+}
+
+function reverseArray(arr){
+    for(var i = 0; i < arr.length/2; i++){
+        [arr[i], arr[arr.length - 1 - i]] = [arr[arr.length - 1 - i], arr[i]]
+    }
+    return arr;
+}
+```
+</details>
+
+<details>
+<summary>
+find
+</summary>
+The find() method returns the value of the first element in the array that satisfies the provided testing function. Otherwise undefined is returned. See MDN
+
+* Invoked on arrays
+* Accepts a callback with value, index and array (just like forEach, map, filter, etc.)
+* Returns the value found or undefined if not found
+
+```js
+/**
+ * Created by ben on 20/01/2018.
+ */
+
+var instructors = [{name: "elie"}, {name: "Matt"}, {name: "Tim"}, {name: "Colt"}];
+
+instructors.find(function(val){
+    return val.name == "Tim"
+}); // {name: "Tim"}
+
+// Using arrow functions
+
+instructors.find((val) => val.name == "Tim");
+
+// findIndex
+
+// Similar to find, but returns an index or -1 if the value is not found
+
+var instructors = [{name: "elie"}, {name: "Matt"}, {name: "Tim"}, {name: "Colt"}];
+
+instructors.findIndex(function(val){
+    return val.name == "Tim"
+}); // 2
+
+instructors.findIndex(function(val){
+    return val.name == "Bob"
+}); // -1
+```
+</details>
+
+<details>
+<summary>
+exercises
+</summary>
+
+```js
+/*
+ Write a function called copyObject, which accepts one parameter, an object. The function should return a shallow copy of the object.
+
+ var o = {name: 'Elie'}
+ var o2 = copyObject({}, o)
+ o2.name = "Tim"
+ o2.name // 'Tim'
+ o.name // 'Elie'
+ */
+
+function copyObject(obj){
+    return Object.assign({},obj);
+}
+
+/*
+
+ Write a function called checkIfFinite which accepts one parameter and returns true if that parameter is a finite number.
+
+ checkIfFinite(4) // true
+ checkIfFinite(-3) // true
+ checkIfFinite(4. // .toEqual(true
+ checkIfFinite(NaN) // false
+ checkIfFinite(Infinity) // false
+ */
+
+function checkIfFinite(number){
+    return Number.isFinite(number);
+}
+
+/*
+
+ Write a function called areAllNumbersFinite which accepts an array and returns true if every single value in the array is a finite number, otherwise return false.
+
+ var finiteNums = [4,-3,2.2]
+ var finiteNumsExceptOne = [4,-3,2.2,NaN]
+ areAllNumbersFinite(finiteNums) // true
+ areAllNumbersFinite(finiteNumsExceptOne) // false
+ */
+
+function areAllNumbersFinite(arr){
+    return arr.every((val) => Number.isFinite(val))
+}
+
+/*
+
+ Write a function called convertArrayLikeObject which accepts a single parameter, an array like object. The function should return the array like object converted to an array.
+
+ var divs = document.getElementsByTagName('div')
+ divs.reduce // undefined
+
+ var converted = convertArrayLikeObject(divs)
+ converted.reduce // funciton(){}...
+ */
+
+function convertArrayLikeObject(obj){
+    return Array.from(obj);
+}
+
+/*
+
+ Write a function called displayEvenArguments which accepts a variable number of arguments and returns a new array with all of the arguments that are even numbers.
+
+ displayEvenArguments(1,2,3,4,5,6) // [2,4,6]
+ displayEvenArguments(7,8,9) // [8]
+ displayEvenArguments(1,3,7) // []
+ */
+
+function displayEvenArguments(...args){
+    return args.filter((val) => val % 2 == 0);
+}
+```
+</details>
+
+
