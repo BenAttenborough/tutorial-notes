@@ -163,3 +163,71 @@ Keep untracked files
 
 Name stashes for easy reference
 `git stash save "WIP: making progress on foo"`
+
+## References
+
+### Lightweight tags
+
+```console
+$ git checkout master
+Switched to branch 'master'
+
+$ git tag my-first-commit
+```
+
+### Annotated tags
+
+```console
+$ git tag -a v1.0 -m "Version 1.0 of my blog"
+
+$ git tag
+my-first-commit
+v1.0
+
+$ git show v1.0
+tag v1.0
+Tagger: Nina Zakharenko <nina@nnja.io>
+Date: Sun Sep 24 17:01:21 2017 -0700
+
+Version 1.0 of my blog
+```
+
+### Working with tags
+
+List all the tags in a repo
+`git tag`
+
+List all tags, and what commit they’re pointing to
+`git show-ref --tags`
+
+List all the tags pointing at a commit
+`git tag --points-at <commit>`
+
+Looking at the tag, or tagged contents:
+`git show <tag-name>`
+
+### Tags and branches
+
+#### Branch
+➤ The current branch pointer moves with every commit to the repository
+
+#### Tag
+➤ The commit that a tag points doesn’t change.
+➤ It’s a snapshot!
+
+### Head-less / detached head
+
+```console
+$ git checkout cd0b57
+Note: checking out 'cd0b57'.
+
+You are in 'detached HEAD' state. You can look around, make experimental changes and commit them, and you can discard any commits you make in this state without impacting any branches by performing another checkout.
+
+$ git add posts/second-post.txt
+
+$ git commit -m "My second post"
+[detached HEAD 1f6ee83] My second post
+1 file changed, 1 insertion(+)
+create mode 100644 posts/secondpost.txt
+```
+
