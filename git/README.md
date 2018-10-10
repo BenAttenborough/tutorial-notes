@@ -98,3 +98,68 @@ s - split the current hunk into smaller hunks
 e - manually edit the current hunk
 ? - print help
 ```
+
+## Stashing
+
+Save un-committed work.
+
+The stash is safe from destructive operations.
+
+### Basic use
+
+stash changes
+`git stash`
+
+list changes
+`git stash list`
+
+show the contents
+`git stash show stash@{0}`
+
+apply the last stash
+`git stash apply`
+
+apply a specific stash
+` git stash apply stash@{0}`
+
+### Keeping files
+
+Keep untracked files
+`git stash --include-untracked`
+
+Keep all files (even ignored ones!)
+`git stash --all`
+
+### Operations
+
+Name stashes for easy reference
+`git stash save "WIP: making progress on foo"`
+
+Start a new branch from a stash
+`git stash branch <optional stash name>`
+
+Grab a single file from a stash
+`git checkout <stash name> -- <filename>`
+
+### Cleaning the stash
+
+Remove the last stash and applying changes:
+`git stash pop`
+tip: doesn’t remove if there’s a merge conflict
+
+Remove the last stash
+`git stash drop`
+
+Remove the nth stash
+`git stash drop stash@{n}`
+
+Remove all stashes
+`git stash clear`
+
+### Extra
+
+Keep untracked files
+`git stash --include-untracked`
+
+Name stashes for easy reference
+`git stash save "WIP: making progress on foo"`
