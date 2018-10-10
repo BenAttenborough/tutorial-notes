@@ -229,5 +229,204 @@ $ git commit -m "My second post"
 [detached HEAD 1f6ee83] My second post
 1 file changed, 1 insertion(+)
 create mode 100644 posts/secondpost.txt
+
+$ git checkout master
+Warning: you are leaving 1 commit behind, not connected to any of your branches:
+1f6ee83 My second post
+```
+
+## Merging
+
+Merge commits are just commits
+
+### Fast forward
+
+Fast-forward happens when there are no commits on the bas branch that occurred after the feature branch was created.
+
+```console
+$ git checkout master
+
+$ git merge feature
+Updating 2733233..9703930
+Fast-forward
+index.txt | 2 +-
+1 file changed, 1 insertion(+), 1 deletion(-)
+```
+
+#### --no-ff (no fast forward mode)
+
+To retain history of a merge commit even if there are no changes to the base branch:
+
+```console
+$ git checkout master
+
+$ git merge new_feature --no-ff
+```
+
+### Merge conflicts
+
+Attempt to merge, but files have diverged
+Git stops until the conflicts are resolved
+
+```console
+$ git merge feature
+Auto-merging feature
+CONFLICT (add/add): Merge conflict in feature
+```
+
+#### Git ReReRe (REuse REcorded REsolution)
+
+Git saves how you resolve a conflict
+Next time it finds the conflict it resuses the same resolution
+
+Turn it on:
+`git config rerere.enabled true`
+use `--global` flag to use in all projects
+
+```console
+$ git config rerere.enabled true
+
+$ git checkout master
+$ git merge feature
+Auto-merging feature
+CONFLICT (add/add): Merge conflict in file
+Recorded preimage for 'file'
+Automatic merge failed; fix conflicts and then commit the result.
+### Fix the merge conflict in file.
+$ git add file
+$ git commit -m "Resolve conflict"
+Recorded resolution for 'feature'.
+[master 0fe266d] Resolve conflict
+```
+
+If merge is rolled back for changes, next time it is merge same conflict resolution can be used:
+
+```console
+$ git merge feature
+Auto-merging feature
+CONFLICT (add/add): Merge conflict in feature
+Resolved 'feature' using previous resolution.
+Automatic merge failed; fix conflicts and then commit the result.
+
+$ git add file
+
+$ git diff --staged
+diff --git a/file b/file
+index 587be6b..a354eda 100644
+--- a/file
++++ b/file
+@@ -1 +1 @@
+-The old change
++This is how I resolved my conflict.
+\ No newline at end of file
+```
+
+## History and diffs
+
+### Git log
+
+`git log`
+
+`git log --one-line`
+
+`git log --since="yesterday"`
+
+`git log --since="2 weeks ago"`
+
+`git log --grep=mail --author=nina --since=2.weeks`
+
+## Fixing mistakes
+
+See the [exercise](https://github.com/nnja/advanced-git/blob/master/exercises/Exercise6-FixingMistakes.md)
+
+`git checkout --file`
+Can be very dangerous. Commit changes before checking out a file.
+
+### Git clean
+Deletes untracked files
+
+!Warning this operation cannot be undone!
+
+You can do a dry run:
+
+`git clean --dry-run`
+
+### Git reset
+
+Another command that performs different action depending on arguments
+
+By default, git performs a `git reset -mixed`
+
+Git checkout will move the head, but branch will stay where it was. Whereas reset will move the head and will move the branch reference, so your branch will be modified.
+
+For commits:
+Move the HEAD pointer, optionally modifies files
+
+For file paths:
+Does not move the HEAD pointer, modifies files
+
+### Git reset cheatsheet
+
+1. Move HEAD and current branch
+2. Reset the staging area
+3. Reset the working area
+
+`--soft` = (1)
+
+`--mixed` =(1) & (2) (default)
+
+`--hard` = (1) & (2) & (3)
+
+### Undo a git reset with orig_head
+
+In case of an accidental `git reset -`
+
+Git keeps the previous value of `HEAD` in variable called
+`ORIG_HEAD`
+
+To go back to the way things were:
+
+`git reset ORIG_HEAD`
+
+### Git revert - the "safe" reset
+
+Git revert creates a new commit that introduces the opposite
+changes from the specified commit.
+
+The original commit stays in the repository.
+
+Tip:
+
+Use revert if you’re undoing a commit that has already been
+shared.
+
+Revert does not change history.
+
+## Git rebase, amend
+
+### Amend
+
+Can be useful if, for example you make a commit adding a file, but forget to add the file:
+
+```console
+$ cat index.txt
+
+welcome.txt Welcome to my blog
+
+python.txt Why python is my favorite language
+
+$ git commit -m "Add a blog post about Python"
+[tech_posts 4080a79] Add a blog post about Python
+1 file changed, 0 insertions(+), 0 deletions(-)
+create mode 100644 A
+
+$ git add posts/python.txt
+
+$ git commit --amend
+[tech_posts de53317] Add a blog post about Python
+Date: Wed Sep 27 22:12:31 2017 -0700
+2 files changed, 1 insertion(+)
+create mode 100644 A
+create mode 100644 posts/python.txt
 ```
 
