@@ -117,8 +117,8 @@ Then run the code and "Hello from JQuery" should appear on the page.
 
 Let's try out an ES6 command
 ```js
-let foo = () => {return "bar"};
-console.log(foo());
+# Using both ES6 and JQuery!
+let foo = () => "bar!";
 $("#app").append("<p>" + foo() + "</p>");
 ```
 
@@ -142,6 +142,51 @@ module: {
           }
         }
       }
+    ]
+}
+```
+
+## Add watch mode
+
+Add the following to scripts:
+
+```js
+"dev": "npm run webpack -- --mode development --watch"
+```
+
+## Adding CSS
+
+Let's create a CSS file:
+
+`touch src/styles.css`
+
+Add some sorta style:
+
+```css
+#app {
+    background-color: brown;
+}
+```
+
+And include it in `index.js`:
+
+`import './styles.css';`
+
+This will throw an error because there is no loader for css yet.
+We can fix that. First by installing css-loader AND style-loader:
+
+`npm install --save-dev css-loader`
+
+`npm install style-loader --save-dev`
+
+Then we can add it to module rules:
+
+```js
+{
+    test: /\.css$/,
+    use: [
+        "style-loader",
+        "css-loader"
     ]
 }
 ```
